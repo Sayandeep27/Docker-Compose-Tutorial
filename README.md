@@ -1,5 +1,7 @@
 # Docker Compose – Beginner Friendly Guide
 
+Best resource for studying - https://www.youtube.com/watch?v=S8f5B8-BtzU
+
 ## What is Docker Compose?
 
 Docker Compose is a tool that allows you to run **multiple Docker containers together** using **one configuration file**.
