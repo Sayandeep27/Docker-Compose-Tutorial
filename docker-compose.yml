@@ -1,39 +1,100 @@
+# Docker Compose file format version
+# 3.9 is stable and commonly used with modern Docker
 version: "3.9"
 
+# All containers (services) are defined here
 services:
+
+  # ----------------------------
+  # Flask ML Application Service
+  # ----------------------------
   flaskapp:
+    # Build Docker image using the Dockerfile in current directory
     build: .
+    
+    # Explicit name for the container (easy to identify)
     container_name: ml_flask_app
+
+    # Port mapping: host_port:container_port
+    # Access Flask app via http://localhost:5000
     ports:
       - "5000:5000"
+
+    # Environment variables passed into the container
     environment:
+      # Tells Flask to run in production mode
       - FLASK_ENV=production
+
+      # MongoDB connection string
+      # 'mongodb' is the service name, NOT localhost or IP
       - MONGO_URI=mongodb://mongodb:27017/ml_db
+
+      # Redis hostname (service name)
       - REDIS_HOST=redis
+
+      # Redis port (default)
       - REDIS_PORT=6379
+
+    # Ensures MongoDB and Redis start BEFORE Flask
     depends_on:
       - mongodb
       - redis
+
+    # Automatically restart container if it crashes
     restart: always
 
+
+  # ----------------------------
+  # MongoDB Database Service
+  # ----------------------------
   mongodb:
+    # Use official MongoDB image (version 7)
     image: mongo:7
+
+    # Fixed container name for clarity
     container_name: ml_mongodb
+
+    # Expose MongoDB to host (optional but useful for debugging)
     ports:
       - "27017:27017"
+
+    # Mount volume to persist database data
+    # /data/db is MongoDB's default storage path
     volumes:
       - mongo_data:/data/db
+
+    # Restart MongoDB automatically on failure
     restart: always
 
+
+  # ----------------------------
+  # Redis Cache Service
+  # ----------------------------
   redis:
+    # Use official Redis image (version 7)
     image: redis:7
+
+    # Fixed container name
     container_name: ml_redis
+
+    # Expose Redis to host (optional, useful for Redis CLI)
     ports:
       - "6379:6379"
+
+    # Volume for Redis persistence (optional but good practice)
     volumes:
       - redis_data:/data
+
+    # Restart Redis automatically on failure
     restart: always
 
+
+# ----------------------------
+# Named Volumes
+# ----------------------------
 volumes:
+  # Stores MongoDB data permanently
   mongo_data:
+
+  # Stores Redis data (if persistence is enabled)
   redis_data:
